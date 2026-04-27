@@ -303,32 +303,51 @@ function App() {
                 <h3>Ecuación dU/dt</h3>
                 <code>dU/dt = α·(λ·O) - (σ·S + μ·R + φ·Cc)</code>
               </div>
-              <div className="equation-grid">
-                <div>
-                  <span>1. Sinergia [α·(λ·O)]</span>
-                  <b className="gain-text">
-                    {displayMetrics.alpha.toFixed(2)}·({displayWeights.lambda.toFixed(1)}·{displayMetrics.O.toFixed(2)}) =
-                    +{displayMetrics.gain.toFixed(3)}
-                  </b>
-                </div>
-                <div>
-                  <span>3. Fricción [μ·R]</span>
-                  <b className="loss-text">
-                    {displayWeights.mu.toFixed(1)}·{displayMetrics.R.toFixed(2)} = -{displayMetrics.lossR.toFixed(3)}
-                  </b>
-                </div>
-                <div>
-                  <span>2. Sicofancia [σ·S]</span>
-                  <b className="loss-text">
-                    {displayWeights.sigma.toFixed(1)}·{displayMetrics.S.toFixed(2)} = -{displayMetrics.lossS.toFixed(3)}
-                  </b>
-                </div>
-                <div>
-                  <span>4. Coord. [φ·Cc]</span>
-                  <b className="loss-text">
-                    {displayWeights.phi.toFixed(1)}·{displayMetrics.Cc.toFixed(2)} = -{displayMetrics.lossCc.toFixed(3)}
-                  </b>
-                </div>
+              <div className="equation-split">
+                <section className="equation-column gains-column">
+                  <h4>↑ GANANCIAS</h4>
+                  <div className="equation-line">
+                    <span>Calidad del Dato [λ·O]</span>
+                    <b>{displayWeights.lambda.toFixed(1)}·{displayMetrics.O.toFixed(2)} = {(displayWeights.lambda * displayMetrics.O).toFixed(3)}</b>
+                  </div>
+                  <div className="equation-line">
+                    <span>Sinergia [α]</span>
+                    <b>{displayMetrics.alpha.toFixed(2)}</b>
+                  </div>
+                  <div className="equation-line total-line">
+                    <span>Impacto positivo [α·(λ·O)]</span>
+                    <b className="gain-text">
+                      {displayMetrics.alpha.toFixed(2)}·({displayWeights.lambda.toFixed(1)}·{displayMetrics.O.toFixed(2)}) =
+                      +{displayMetrics.gain.toFixed(3)}
+                    </b>
+                  </div>
+                </section>
+
+                <section className="equation-column losses-column">
+                  <h4>↓ PÉRDIDAS</h4>
+                  <div className="equation-line">
+                    <span>Sicofancia [σ·S]</span>
+                    <b className="loss-text">
+                      {displayWeights.sigma.toFixed(1)}·{displayMetrics.S.toFixed(2)} = -{displayMetrics.lossS.toFixed(3)}
+                    </b>
+                  </div>
+                  <div className="equation-line">
+                    <span>Fricción [μ·R]</span>
+                    <b className="loss-text">
+                      {displayWeights.mu.toFixed(1)}·{displayMetrics.R.toFixed(2)} = -{displayMetrics.lossR.toFixed(3)}
+                    </b>
+                  </div>
+                  <div className="equation-line">
+                    <span>Coordinación [φ·Cc]</span>
+                    <b className="loss-text">
+                      {displayWeights.phi.toFixed(1)}·{displayMetrics.Cc.toFixed(2)} = -{displayMetrics.lossCc.toFixed(3)}
+                    </b>
+                  </div>
+                  <div className="equation-line total-line">
+                    <span>Penalización total</span>
+                    <b className="loss-text">-{displayMetrics.totalLoss.toFixed(3)}</b>
+                  </div>
+                </section>
               </div>
               <div className="velocity-strip">
                 <span>Velocidad Instantánea Evaluada (dU/dt)</span>
