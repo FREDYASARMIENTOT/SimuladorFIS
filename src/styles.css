@@ -603,6 +603,16 @@ input[type="range"] {
   font-weight: 900;
 }
 
+.weight-symbol {
+  cursor: help;
+  text-decoration: underline dotted #94a3b8;
+  text-underline-offset: 3px;
+}
+
+.weight-symbol:hover {
+  color: #4f46e5;
+}
+
 .weight-mini b {
   text-align: right;
 }

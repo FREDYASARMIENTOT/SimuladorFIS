@@ -37,6 +37,13 @@ const DEFAULT_WEIGHTS = {
   phi: 0.2,
 };
 
+const WEIGHT_META = {
+  lambda: 'λ: peso de eficiencia. Escala la Calidad del Dato (O) dentro de la ganancia.',
+  sigma: 'σ: penalización por sicofancia. Escala el costo S.',
+  mu: 'μ: penalización por fricción. Escala el costo R.',
+  phi: 'φ: penalización por coordinación. Escala el costo Cc.',
+};
+
 const QUESTIONS = [
   { id: 1, text: 'Fidelidad dato fuente', dim: 'O', label: 'O' },
   { id: 2, text: 'Ausencia redundancias', dim: 'O', label: 'O' },
@@ -170,6 +177,8 @@ function App() {
   const compositionData = [
     {
       name: 'Actual',
+      'Calidad del Dato [λ·O]': Number((displayWeights.lambda * displayMetrics.O).toFixed(3)),
+      'Sinergia [α]': Number(displayMetrics.alpha.toFixed(3)),
       Ganancia: Number(displayMetrics.gain.toFixed(3)),
       Sicofancia: Number(displayMetrics.lossS.toFixed(3)),
       Fricción: Number(displayMetrics.lossR.toFixed(3)),
@@ -367,7 +376,9 @@ function App() {
                 ['phi', 'φ'],
               ].map(([key, label]) => (
                 <label className="weight-mini" key={key}>
-                  <span>{label}</span>
+                  <span className="weight-symbol" title={WEIGHT_META[key]} aria-label={WEIGHT_META[key]}>
+                    {label}
+                  </span>
                   <input
                     type="range"
                     min="0"
@@ -435,6 +446,8 @@ function App() {
                   <YAxis fontSize={8} axisLine={false} tickLine={false} stroke="#94a3b8" />
                   <Tooltip contentStyle={{ fontSize: '9px', borderRadius: '4px', padding: '4px' }} />
                   <Legend wrapperStyle={{ fontSize: 9 }} />
+                  <Bar dataKey="Calidad del Dato [λ·O]" fill="#0ea5e9" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="Sinergia [α]" fill="#14b8a6" radius={[3, 3, 0, 0]} />
                   <Bar dataKey="Ganancia" fill="#10b981" radius={[3, 3, 0, 0]} />
                   <Bar dataKey="Sicofancia" fill="#f43f5e" radius={[3, 3, 0, 0]} />
                   <Bar dataKey="Fricción" fill="#f59e0b" radius={[3, 3, 0, 0]} />
