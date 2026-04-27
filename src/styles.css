@@ -287,6 +287,10 @@ button {
   color: #0f766e;
 }
 
+.dimension-code {
+  cursor: help;
+}
+
 .question-copy {
   flex: 1 1 auto;
   min-width: 0;
@@ -714,6 +718,42 @@ tbody tr:hover {
   font-family: inherit;
   font-size: 0.68rem;
   text-align: center;
+}
+
+.dimension-tooltip {
+  display: grid;
+  gap: 4px;
+  max-width: 230px;
+  padding: 8px 9px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.98);
+  box-shadow: 0 10px 24px rgb(15 23 42 / 0.14);
+}
+
+.dimension-tooltip strong {
+  color: #1e293b;
+  font-size: 0.68rem;
+  font-weight: 950;
+}
+
+.dimension-tooltip span,
+.dimension-tooltip em,
+.dimension-tooltip b {
+  color: #475569;
+  font-size: 0.6rem;
+  font-style: normal;
+  line-height: 1.25;
+}
+
+.dimension-tooltip em {
+  color: #4f46e5;
+  font-weight: 900;
+}
+
+.dimension-tooltip b {
+  color: #0f766e;
+  font-weight: 950;
 }
 
 .conventions-strip {

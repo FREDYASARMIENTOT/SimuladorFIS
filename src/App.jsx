@@ -142,6 +142,22 @@ function formatSigned(value) {
   return `${number > 0 ? '+' : ''}${number.toFixed(3)}`;
 }
 
+function DimensionTooltip({ active, payload }) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  const data = payload[0].payload;
+  return (
+    <div className="dimension-tooltip">
+      <strong>{data.title}</strong>
+      <span>{data.description}</span>
+      <em>{data.impact}</em>
+      <b>Valor normalizado: {data.value.toFixed(3)}</b>
+    </div>
+  );
+}
+
 function downloadCsv(rows) {
   const headers = ['t', 'timestamp', 'O', 'alpha', 'S', 'R', 'Cc', 'gain', 'lossS', 'lossR', 'lossCc', 'totalLoss', 'dUdt', 'Ut', 'k'];
   const csv = [
@@ -187,11 +203,41 @@ function App() {
   ];
 
   const dimensionData = [
-    { name: 'O', value: Number(displayMetrics.O.toFixed(3)) },
-    { name: 'α', value: Number(displayMetrics.alpha.toFixed(3)) },
-    { name: 'S', value: Number(displayMetrics.S.toFixed(3)) },
-    { name: 'R', value: Number(displayMetrics.R.toFixed(3)) },
-    { name: 'Cc', value: Number(displayMetrics.Cc.toFixed(3)) },
+    {
+      name: 'O Dato',
+      title: 'Calidad del dato (O)',
+      description: 'Mide eficiencia, fidelidad, ausencia de redundancia, adherencia ABC y drivers.',
+      impact: '↑ Aumenta la ganancia cuando sube.',
+      value: Number(displayMetrics.O.toFixed(3)),
+    },
+    {
+      name: 'α Sin',
+      title: 'Sinergia humano-IA (α)',
+      description: 'Mide transparencia XAI, autonomía equilibrada y mejora del flujo humano.',
+      impact: '↑ Multiplica la calidad del dato para producir ganancia.',
+      value: Number(displayMetrics.alpha.toFixed(3)),
+    },
+    {
+      name: 'S Sico',
+      title: 'Sicofancia (S)',
+      description: 'Mide complacencia del agente y falta de independencia crítica.',
+      impact: '↓ Aumenta la pérdida penalizada por σ cuando sube.',
+      value: Number(displayMetrics.S.toFixed(3)),
+    },
+    {
+      name: 'R Fric',
+      title: 'Fricción operativa (R)',
+      description: 'Mide repeticiones, carga de supervisión y costo de recursos.',
+      impact: '↓ Aumenta la pérdida penalizada por μ cuando sube.',
+      value: Number(displayMetrics.R.toFixed(3)),
+    },
+    {
+      name: 'Cc Coord',
+      title: 'Coordinación contextual (Cc)',
+      description: 'Mide latencia y pérdida de efectividad de memoria.',
+      impact: '↓ Aumenta la pérdida penalizada por φ cuando sube.',
+      value: Number(displayMetrics.Cc.toFixed(3)),
+    },
   ];
 
   const groupedQuestions = DIMENSION_ORDER.map((dimension) => ({
@@ -269,7 +315,11 @@ function App() {
                 {group.questions.map((question) => (
                   <label className="compact-question" key={question.id}>
                     <span className="question-line">
-                      <span className={`dimension-code dim-${question.label === 'α' ? 'alpha' : question.label}`}>
+                      <span
+                        className={`dimension-code dim-${question.label === 'α' ? 'alpha' : question.label}`}
+                        title={`${DIMENSION_META[question.dim].title}: ${DIMENSION_META[question.dim].detail}`}
+                        aria-label={`${DIMENSION_META[question.dim].title}: ${DIMENSION_META[question.dim].detail}`}
+                      >
                         {question.label}
                       </span>
                       <span className="question-copy">{question.text}</span>
@@ -463,9 +513,9 @@ function App() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dimensionData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" fontSize={8} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="name" interval={0} fontSize={7} axisLine={false} tickLine={false} />
                   <YAxis domain={[0, 1]} fontSize={8} axisLine={false} tickLine={false} stroke="#94a3b8" />
-                  <Tooltip contentStyle={{ fontSize: '9px', borderRadius: '4px', padding: '4px' }} />
+                  <Tooltip content={<DimensionTooltip />} />
                   <Bar dataKey="value" fill="#4f46e5" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
