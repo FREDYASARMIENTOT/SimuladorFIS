@@ -706,6 +706,59 @@ tbody tr:hover {
   text-align: center;
 }
 
+.conventions-strip {
+  display: grid;
+  grid-template-columns: 1.05fr 1.35fr 1fr 1.25fr;
+  gap: 6px;
+  flex: 0 0 104px;
+  padding: 6px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.convention-block {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.convention-block h3 {
+  margin: 0 0 4px;
+  color: #64748b;
+  font-size: 0.55rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.convention-block p,
+.convention-block code {
+  display: block;
+  margin: 0;
+  color: #475569;
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.convention-block p + p {
+  margin-top: 3px;
+}
+
+.convention-block code {
+  margin-bottom: 4px;
+  color: #2a2b70;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-weight: 950;
+}
+
+.formula-block {
+  border-left: 3px solid #4f46e5;
+}
+
 @media (max-width: 1180px) {
   .sim-shell {
     height: 100vh;
@@ -747,6 +800,11 @@ tbody tr:hover {
   .history-card {
     min-height: 0;
   }
+
+  .conventions-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-basis: 130px;
+  }
 }
 
 @media (max-width: 720px) {
@@ -777,5 +835,10 @@ tbody tr:hover {
 
   .chart-panel {
     height: 170px;
+  }
+
+  .conventions-strip {
+    grid-template-columns: 1fr;
+    flex-basis: 260px;
   }
 }

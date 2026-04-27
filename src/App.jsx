@@ -507,6 +507,31 @@ function App() {
                 </tbody>
               </table>
             </div>
+            <div className="conventions-strip">
+              <section className="convention-block">
+                <h3>Convenciones</h3>
+                <p><b>O</b>: calidad del dato · <b>α</b>: sinergia · <b>S</b>: sicofancia · <b>R</b>: fricción · <b>Cc</b>: coordinación</p>
+                <p><b>λ, σ, μ, φ</b>: pesos del modelo que escalan impacto positivo y penalizaciones.</p>
+              </section>
+              <section className="convention-block formula-block">
+                <h3>Derivada dU/dt</h3>
+                <code>dU/dt = α·(λ·O) - (σ·S + μ·R + φ·Cc)</code>
+                <p>1. Calcular ganancia: <b>α·(λ·O)</b>. 2. Calcular pérdidas: <b>σ·S + μ·R + φ·Cc</b>. 3. Restar pérdidas a ganancias.</p>
+              </section>
+              <section className="convention-block">
+                <h3>Integral Ut</h3>
+                <code>Ut = Ut-1 + dU/dt</code>
+                <p>La integral acumula la utilidad histórica: cada iteración suma su velocidad instantánea al stock anterior.</p>
+              </section>
+              <section className="convention-block">
+                <h3>Paso actual</h3>
+                <p>
+                  <b>{displayMetrics.alpha.toFixed(2)}</b>·(<b>{displayWeights.lambda.toFixed(1)}</b>·<b>{displayMetrics.O.toFixed(2)}</b>)
+                  - (<b>{displayWeights.sigma.toFixed(1)}</b>·<b>{displayMetrics.S.toFixed(2)}</b> + <b>{displayWeights.mu.toFixed(1)}</b>·<b>{displayMetrics.R.toFixed(2)}</b> + <b>{displayWeights.phi.toFixed(1)}</b>·<b>{displayMetrics.Cc.toFixed(2)}</b>)
+                  = <b className={displayMetrics.dUdt >= 0 ? 'gain-text' : 'loss-text'}>{formatSigned(displayMetrics.dUdt)}</b>
+                </p>
+              </section>
+            </div>
           </section>
         </section>
       </section>
