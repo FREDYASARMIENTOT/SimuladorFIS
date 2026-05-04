@@ -5,6 +5,7 @@ import {
   Brain,
   Database,
   Download,
+  Menu,
   PlayCircle,
   RefreshCcw,
   Save,
@@ -23,6 +24,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceDot,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -185,10 +187,30 @@ function App() {
   const [answers, setAnswers] = useState(SCENARIOS.madurez);
   const [history, setHistory] = useState(DEMO_HISTORY);
   const [weights, setWeights] = useState(DEFAULT_WEIGHTS);
+  const [telemetryVisible, setTelemetryVisible] = useState(true);
+  const [selectedIteration, setSelectedIteration] = useState(null);
 
   const metrics = useMemo(() => calculateMetrics(answers, weights), [answers, weights]);
   const displayMetrics = history.length > 0 ? history[history.length - 1] : metrics;
   const displayWeights = history.length > 0 ? displayMetrics : weights;
+  const selectedHistoryPoint = history.find((row) => row.t === selectedIteration);
+  const selectedMetrics = selectedHistoryPoint ?? displayMetrics;
+  const selectedWeights = selectedHistoryPoint ?? displayWeights;
+  const renderDerivativeDot = ({ cx, cy, payload }) => (
+    <circle
+      cx={cx}
+      cy={cy}
+      r={payload.t === selectedIteration ? 4.5 : 2.6}
+      fill={payload.t === selectedIteration ? '#0f172a' : '#4f46e5'}
+      stroke={payload.t === selectedIteration ? '#facc15' : '#4f46e5'}
+      strokeWidth={payload.t === selectedIteration ? 2 : 1}
+      className="derivative-click-dot"
+      onClick={(event) => {
+        event.stopPropagation();
+        setSelectedIteration(payload.t);
+      }}
+    />
+  );
 
   const compositionData = [
     {
@@ -257,17 +279,20 @@ function App() {
       Ut: previousUt + metrics.dUdt,
     };
     setHistory((current) => [...current, entry]);
+    setSelectedIteration(entry.t);
   };
 
   const loadDemo = () => {
     setHistory(DEMO_HISTORY);
     setAnswers(SCENARIOS.madurez);
     setWeights(DEFAULT_WEIGHTS);
+    setSelectedIteration(null);
   };
 
   const clearSimulation = () => {
     setAnswers(SCENARIOS.caos);
     setHistory([]);
+    setSelectedIteration(null);
   };
 
   return (
@@ -294,13 +319,36 @@ function App() {
       </header>
 
       <section className="sim-body">
-        <aside className="controls-card">
+        {!telemetryVisible && (
+          <button
+            type="button"
+            className="telemetry-rail-toggle"
+            onClick={() => setTelemetryVisible(true)}
+            aria-label="Mostrar telemetria cognitiva"
+            title="Mostrar telemetria cognitiva"
+          >
+            <Menu size={15} />
+          </button>
+        )}
+
+        <aside className={`controls-card ${telemetryVisible ? 'is-visible' : 'is-hidden'}`}>
           <div className="compact-card-header">
             <div>
               <h2>Telemetría cognitiva</h2>
               <p>Escala Likert 1-5 normalizada a 0-1.</p>
             </div>
-            <Target size={12} />
+            <div className="telemetry-header-actions">
+              <button
+                type="button"
+                className="telemetry-icon-button"
+                onClick={() => setTelemetryVisible(false)}
+                aria-label="Ocultar telemetria cognitiva"
+                title="Ocultar telemetria cognitiva"
+              >
+                <Menu size={13} />
+              </button>
+              <Target size={12} />
+            </div>
           </div>
           <div className="question-stack">
             {groupedQuestions.map((group) => (
@@ -349,10 +397,10 @@ function App() {
           <section className="top-row">
             <article className="k-card">
               <h3>Madurez (k)</h3>
-              <strong>{(displayMetrics.k * 100).toFixed(1)}%</strong>
-              <p>Homeostasis del sistema.</p>
-              <span className={`utility-chip ${displayMetrics.dUdt >= 0 ? 'positive' : 'negative'}`}>
-                {displayMetrics.dUdt >= 0 ? 'Utilidad positiva' : 'Utilidad negativa'}
+              <strong>{(selectedMetrics.k * 100).toFixed(1)}%</strong>
+              <p>{selectedHistoryPoint ? `Iteración seleccionada t=${selectedMetrics.t}.` : 'Homeostasis del sistema.'}</p>
+              <span className={`utility-chip ${selectedMetrics.dUdt >= 0 ? 'positive' : 'negative'}`}>
+                {selectedMetrics.dUdt >= 0 ? 'Utilidad positiva' : 'Utilidad negativa'}
               </span>
               <Activity className="k-watermark" size={86} strokeWidth={1.4} />
             </article>
@@ -367,17 +415,17 @@ function App() {
                   <h4>↑ GANANCIAS</h4>
                   <div className="equation-line">
                     <span>Calidad del Dato [λ·O]</span>
-                    <b>{displayWeights.lambda.toFixed(1)}·{displayMetrics.O.toFixed(2)} = {(displayWeights.lambda * displayMetrics.O).toFixed(3)}</b>
+                    <b>{selectedWeights.lambda.toFixed(1)}·{selectedMetrics.O.toFixed(2)} = {(selectedWeights.lambda * selectedMetrics.O).toFixed(3)}</b>
                   </div>
                   <div className="equation-line">
                     <span>Sinergia [α]</span>
-                    <b>{displayMetrics.alpha.toFixed(2)}</b>
+                    <b>{selectedMetrics.alpha.toFixed(2)}</b>
                   </div>
                   <div className="equation-line total-line">
                     <span>Impacto positivo [α·(λ·O)]</span>
                     <b className="gain-text">
-                      {displayMetrics.alpha.toFixed(2)}·({displayWeights.lambda.toFixed(1)}·{displayMetrics.O.toFixed(2)}) =
-                      +{displayMetrics.gain.toFixed(3)}
+                      {selectedMetrics.alpha.toFixed(2)}·({selectedWeights.lambda.toFixed(1)}·{selectedMetrics.O.toFixed(2)}) =
+                      +{selectedMetrics.gain.toFixed(3)}
                     </b>
                   </div>
                 </section>
@@ -387,30 +435,30 @@ function App() {
                   <div className="equation-line">
                     <span>Sicofancia [σ·S]</span>
                     <b className="loss-text">
-                      {displayWeights.sigma.toFixed(1)}·{displayMetrics.S.toFixed(2)} = -{displayMetrics.lossS.toFixed(3)}
+                      {selectedWeights.sigma.toFixed(1)}·{selectedMetrics.S.toFixed(2)} = -{selectedMetrics.lossS.toFixed(3)}
                     </b>
                   </div>
                   <div className="equation-line">
                     <span>Fricción [μ·R]</span>
                     <b className="loss-text">
-                      {displayWeights.mu.toFixed(1)}·{displayMetrics.R.toFixed(2)} = -{displayMetrics.lossR.toFixed(3)}
+                      {selectedWeights.mu.toFixed(1)}·{selectedMetrics.R.toFixed(2)} = -{selectedMetrics.lossR.toFixed(3)}
                     </b>
                   </div>
                   <div className="equation-line">
                     <span>Coordinación [φ·Cc]</span>
                     <b className="loss-text">
-                      {displayWeights.phi.toFixed(1)}·{displayMetrics.Cc.toFixed(2)} = -{displayMetrics.lossCc.toFixed(3)}
+                      {selectedWeights.phi.toFixed(1)}·{selectedMetrics.Cc.toFixed(2)} = -{selectedMetrics.lossCc.toFixed(3)}
                     </b>
                   </div>
                   <div className="equation-line total-line">
                     <span>Penalización total</span>
-                    <b className="loss-text">-{displayMetrics.totalLoss.toFixed(3)}</b>
+                    <b className="loss-text">-{selectedMetrics.totalLoss.toFixed(3)}</b>
                   </div>
                 </section>
               </div>
               <div className="velocity-strip">
                 <span>Velocidad Instantánea Evaluada (dU/dt)</span>
-                <strong className={displayMetrics.dUdt >= 0 ? 'gain-text' : 'loss-text'}>{formatSigned(displayMetrics.dUdt)}</strong>
+                <strong className={selectedMetrics.dUdt >= 0 ? 'gain-text' : 'loss-text'}>{formatSigned(selectedMetrics.dUdt)}</strong>
               </div>
             </article>
 
@@ -452,13 +500,32 @@ function App() {
                 <TrendingUp size={10} /> Derivada dU/dt
               </h4>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={history} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <LineChart
+                  data={history}
+                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+                  onClick={(event) => {
+                    const point = event?.activePayload?.[0]?.payload;
+                    if (point) {
+                      setSelectedIteration(point.t);
+                    }
+                  }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="t" hide />
                   <YAxis fontSize={8} axisLine={false} tickLine={false} domain={[-1.5, 1.5]} stroke="#94a3b8" />
                   <Tooltip contentStyle={{ fontSize: '9px', borderRadius: '4px', padding: '4px' }} />
                   <ReferenceLine y={0} stroke="#cbd5e1" strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey="dUdt" stroke="#4f46e5" strokeWidth={2} dot={{ r: 2, fill: '#4f46e5' }} />
+                  {selectedHistoryPoint && (
+                    <ReferenceDot
+                      x={selectedHistoryPoint.t}
+                      y={selectedHistoryPoint.dUdt}
+                      r={5}
+                      fill="#0f172a"
+                      stroke="#facc15"
+                      strokeWidth={2}
+                    />
+                  )}
+                  <Line type="monotone" dataKey="dUdt" stroke="#4f46e5" strokeWidth={2} dot={renderDerivativeDot} />
                 </LineChart>
               </ResponsiveContainer>
             </article>
@@ -480,6 +547,16 @@ function App() {
                   <YAxis fontSize={8} axisLine={false} tickLine={false} stroke="#94a3b8" />
                   <Tooltip contentStyle={{ fontSize: '9px', borderRadius: '4px', padding: '4px' }} />
                   <ReferenceLine y={0} stroke="#94a3b8" strokeWidth={1} />
+                  {selectedHistoryPoint && (
+                    <ReferenceDot
+                      x={selectedHistoryPoint.t}
+                      y={selectedHistoryPoint.Ut}
+                      r={5}
+                      fill="#0f172a"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                    />
+                  )}
                   <Area type="monotone" dataKey="Ut" stroke="#10b981" strokeWidth={2} fill="url(#colorUt)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -546,7 +623,7 @@ function App() {
                 </thead>
                 <tbody>
                   {history.map((row) => (
-                    <tr key={row.t}>
+                    <tr key={row.t} className={selectedIteration === row.t ? 'selected-history-row' : ''}>
                       <td>t={row.t}</td>
                       <td>{row.O.toFixed(2)}</td>
                       <td>{row.alpha.toFixed(2)}</td>
@@ -587,11 +664,11 @@ function App() {
                 <p>La integral acumula la utilidad histórica: cada iteración suma su velocidad instantánea al stock anterior.</p>
               </section>
               <section className="convention-block">
-                <h3>Paso actual</h3>
+                <h3>{selectedHistoryPoint ? `Paso seleccionado t=${selectedMetrics.t}` : 'Paso actual'}</h3>
                 <p>
-                  <b>{displayMetrics.alpha.toFixed(2)}</b>·(<b>{displayWeights.lambda.toFixed(1)}</b>·<b>{displayMetrics.O.toFixed(2)}</b>)
-                  - (<b>{displayWeights.sigma.toFixed(1)}</b>·<b>{displayMetrics.S.toFixed(2)}</b> + <b>{displayWeights.mu.toFixed(1)}</b>·<b>{displayMetrics.R.toFixed(2)}</b> + <b>{displayWeights.phi.toFixed(1)}</b>·<b>{displayMetrics.Cc.toFixed(2)}</b>)
-                  = <b className={displayMetrics.dUdt >= 0 ? 'gain-text' : 'loss-text'}>{formatSigned(displayMetrics.dUdt)}</b>
+                  <b>{selectedMetrics.alpha.toFixed(2)}</b>·(<b>{selectedWeights.lambda.toFixed(1)}</b>·<b>{selectedMetrics.O.toFixed(2)}</b>)
+                  - (<b>{selectedWeights.sigma.toFixed(1)}</b>·<b>{selectedMetrics.S.toFixed(2)}</b> + <b>{selectedWeights.mu.toFixed(1)}</b>·<b>{selectedMetrics.R.toFixed(2)}</b> + <b>{selectedWeights.phi.toFixed(1)}</b>·<b>{selectedMetrics.Cc.toFixed(2)}</b>)
+                  = <b className={selectedMetrics.dUdt >= 0 ? 'gain-text' : 'loss-text'}>{formatSigned(selectedMetrics.dUdt)}</b>
                 </p>
               </section>
             </div>

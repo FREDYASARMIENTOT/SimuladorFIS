@@ -142,6 +142,44 @@ button {
   gap: 6px;
   min-height: 0;
   overflow: hidden;
+  position: relative;
+}
+
+.telemetry-rail-toggle,
+.telemetry-icon-button {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 7px;
+  background: #eef2ff;
+  color: #4f46e5;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.telemetry-rail-toggle:hover,
+.telemetry-icon-button:hover {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.telemetry-rail-toggle {
+  flex: 0 0 34px;
+  width: 34px;
+  min-width: 34px;
+  align-self: stretch;
+  border: 1px solid #dbe3ee;
+  box-shadow: 0 6px 18px rgb(15 23 42 / 0.06);
+}
+
+.telemetry-icon-button {
+  width: 24px;
+  height: 24px;
+}
+
+.telemetry-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .controls-card {
@@ -150,6 +188,32 @@ button {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  transition:
+    flex-basis 180ms ease,
+    width 180ms ease,
+    min-width 180ms ease,
+    opacity 140ms ease,
+    transform 180ms ease,
+    margin 180ms ease;
+}
+
+.controls-card.is-visible {
+  width: 340px;
+  min-width: 340px;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.controls-card.is-hidden {
+  flex-basis: 0;
+  width: 0;
+  min-width: 0;
+  margin-right: 0;
+  opacity: 0;
+  transform: translateX(-24px);
+  pointer-events: none;
+  border-width: 0;
+  box-shadow: none;
 }
 
 .compact-card-header {
@@ -659,6 +723,14 @@ input[type="range"] {
   min-height: 0;
 }
 
+.derivative-click-dot {
+  cursor: pointer;
+  transition:
+    r 140ms ease,
+    fill 140ms ease,
+    stroke 140ms ease;
+}
+
 .history-card {
   display: flex;
   flex: 1 1 auto;
@@ -710,6 +782,16 @@ td {
 
 tbody tr:hover {
   background: #f8fafc;
+}
+
+.selected-history-row {
+  background: #fff7ed;
+  box-shadow: inset 4px 0 0 #f59e0b;
+}
+
+.selected-history-row td {
+  color: #0f172a;
+  font-weight: 950;
 }
 
 .empty-cell {
