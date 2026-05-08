@@ -188,6 +188,53 @@ Después abre:
 http://localhost:5173/
 ```
 
+## Ejecutar Con Dev Containers
+
+También puedes abrir el proyecto dentro de un Dev Container en VS Code.
+
+### 1. Requisitos
+
+- Docker Desktop instalado y abierto.
+- VS Code instalado.
+- Extensión Dev Containers instalada en VS Code.
+
+### 2. Abrir El Proyecto En VS Code
+
+Desde una terminal:
+
+```powershell
+cd D:\CodexChatgpt\Project1
+code .
+```
+
+### 3. Reabrir En Contenedor
+
+En VS Code:
+
+1. Presiona `Ctrl+Shift+P`.
+2. Busca `Dev Containers: Reopen in Container`.
+3. Espera a que VS Code construya y abra el entorno.
+
+El contenedor usa Node.js 24 e instala las dependencias con:
+
+```powershell
+npm install
+```
+
+### 4. Ejecutar La App Dentro Del Contenedor
+
+En la terminal integrada de VS Code:
+
+```powershell
+npm run dev -- --port 5173
+```
+
+VS Code reenviará el puerto `5173`. Abre:
+
+```text
+http://localhost:5173/
+```
+
 ## Estructura Del Proyecto
 
 ```text
